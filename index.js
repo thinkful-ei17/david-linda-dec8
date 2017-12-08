@@ -2,13 +2,13 @@
 
 const STORE = {
   items: [
-  {name: 'apples', checked: false},
-  {name: 'oranges', checked: false},
-  {name: 'milk', checked: true},
-  {name: 'bread', checked: false}
+    {name: 'apples', checked: false},
+    {name: 'oranges', checked: false},
+    {name: 'milk', checked: true},
+    {name: 'bread', checked: false}
   ],
   hideCompleted: false
-}
+};
 
 //User can press a toggle switch to show all items or show only items that are unchecked
 /*
@@ -50,16 +50,27 @@ function generateShoppingItemsString(shoppingList) {
 // hidecomplete true = hide checked true items
 // if hidecomplete is true then create new array of items not checked (check is false);
 
-function renderShoppingList() {
+function renderShoppingList () {
   // render the shopping list in the DOM
   console.log('`renderShoppingList` ran');
+  const inputVal = $('.js-search-list-entry').val();
   let shoppingListItemsString;
   let uncheckedList = STORE.items;
   if (STORE.hideCompleted) {
     uncheckedList = uncheckedList.filter(function(status){
-      return status.checked === false; //can have multiple filters
-    }); //just return true or false
+      return status.checked === false;
+    }); 
+    if (inputVal) {
+      uncheckedList = uncheckedList.filter(function(status) {
+        return status.name === inputVal;
+      });}
+    //can have multiple filters
   }
+  else if (inputVal) {
+    uncheckedList = uncheckedList.filter(function(status) {
+      return status.name === inputVal;
+    });
+  } //just return true or false
   shoppingListItemsString = generateShoppingItemsString(uncheckedList);
   // insert that HTML into the DOM
   $('.js-shopping-list').html(shoppingListItemsString);
@@ -129,6 +140,34 @@ function handleCompletedFilterToggle() {
   });
 }
 
+// user types in a search term and clicks a button 'search'
+// filter STORE by search term
+// re render store list
+
+// retrieve the input from user and assign
+// use .filter to filter through our STORE.items array
+// return filtered array
+
+
+// function itemFilter () {
+//   // we want to return new filtered array
+//   const inputVal = $('.js-search-list-entry').val();
+//   const filteredList = STORE.items.filter( item => {
+//     return item.name === inputVal;
+//   });
+//   console.log('itemFilter ran');
+//   return filteredList;
+// }
+
+function handleSearchItem() {
+  $('#js-shopping-list-search').submit(event => {
+    event.preventDefault();
+    console.log('handleSearchItem ran');
+    renderShoppingList();
+    
+  });
+}
+
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
 // that handle new item submission and user clicks on the "check" and "delete" buttons
@@ -139,6 +178,8 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleCompletedFilterToggle();
+  handleSearchItem();
+  // itemFilter();
 }
 
 // when the page loads, call `handleShoppingList`
